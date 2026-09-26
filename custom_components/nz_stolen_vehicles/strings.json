@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "NZ Stolen Vehicles",
+        "description": "Download the NZ Police stolen vehicles list. All of New Zealand is the default.",
+        "data": {
+          "district": "Area",
+          "scan_interval": "Refresh interval"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "That area is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "NZ Stolen Vehicles",
+        "description": "Change the Police district list or how often it refreshes.",
+        "data": {
+          "district": "Area",
+          "scan_interval": "Refresh interval"
+        }
+      }
+    }
+  },
+  "services": {
+    "check_plate": {
+      "name": "Check plate",
+      "description": "Look up a registration against the cached NZ Police stolen vehicles list.",
+      "fields": {
+        "plate": {
+          "name": "Plate",
+          "description": "Registration plate to check. Spaces and dashes are ignored."
+        }
+      }
+    }
+  }
+}

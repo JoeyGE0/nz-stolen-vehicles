@@ -1,0 +1,11 @@
+check_plate:
+  name: Check plate
+  description: Look up a registration against the cached NZ Police stolen vehicles list.
+  fields:
+    plate:
+      name: Plate
+      description: Registration plate to check (spaces and dashes are ignored).
+      required: true
+      example: MSS927
+      selector:
+        text:

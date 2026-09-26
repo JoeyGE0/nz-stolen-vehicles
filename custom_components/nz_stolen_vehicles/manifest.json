@@ -1,0 +1,11 @@
+{
+  "domain": "nz_stolen_vehicles",
+  "name": "NZ Stolen Vehicles",
+  "codeowners": ["@JoeyGE0"],
+  "config_flow": true,
+  "documentation": "https://github.com/JoeyGE0/nz-stolen-vehicles",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/JoeyGE0/nz-stolen-vehicles/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}
