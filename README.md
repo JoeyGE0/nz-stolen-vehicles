@@ -6,8 +6,8 @@ Use it with Frigate LPR (or any other plate source) to alert when a stolen vehic
 
 ## What it does
 
-- Downloads the Police CSV (last 6 months) on a schedule
-- Lets you pick one area at setup. **All of New Zealand is the default**
+- Checks the Police national CSV on a schedule, but only downloads it when the file is new (`If-Modified-Since` / HTTP 304)
+- Lets you pick one area at setup. **All of New Zealand is the default**. District filtering is done locally so we can use the cacheable national file.
 - Exposes `sensor.nz_stolen_vehicles_*` with the vehicle count
 - Service `nz_stolen_vehicles.check_plate` returns whether that plate is on the list
 - Fires `nz_stolen_vehicles_match` when a check hits
@@ -28,7 +28,7 @@ It does **not** scrape the search box. That form is behind reCAPTCHA. The downlo
 
 | Entity | State | Notes |
 | --- | --- | --- |
-| Stolen vehicles sensor | count | Attributes: `area`, `newest_date_stolen`, `last_refresh`. The full plate list is **not** on the entity (too big for recorder). |
+| Stolen vehicles sensor | count | Attributes: `area`, `newest_date_stolen`, `file_last_modified`, `file_unchanged`, `last_refresh`. Full plate list is **not** on the entity. |
 
 ## Service: `nz_stolen_vehicles.check_plate`
 
@@ -110,7 +110,11 @@ Police say the file is a snapshot. It does **not** include vehicles that are:
 - reported stolen and already recovered
 - not registered with NZTA for use in New Zealand
 
-Lost/stolen plates are not in this list. Refresh default is 6 hours.
+Lost/stolen plates are not in this list.
+
+The current Police page only calls it a snapshot. Older official notes say the register is updated **about three times a day** ([2011 Police release](https://www.police.govt.nz/news/release/30151), [data.govt.nz](https://catalogue.data.govt.nz/dataset/police-stolen-vehicle-database)). I have not seen a live “updated every X hours” label on the download page.
+
+HA still *checks* every **6 hours** (configurable 1–24). If Police send the same `Last-Modified`, HA gets HTTP 304 and does **not** download the CSV again. The file timestamp is on the sensor as `file_last_modified`.
 
 ## Areas
 

@@ -66,10 +66,9 @@ class NZStolenVehiclesSensor(
             "area": district_label(data.district),
             "district_id": data.district,
             "newest_date_stolen": data.newest_date,
-            "last_refresh": (
-                self.coordinator.last_update_success_time.isoformat()
-                if self.coordinator.last_update_success_time
-                else None
-            ),
+            "file_last_modified": data.last_modified,
+            "file_unchanged": data.file_unchanged,
+            "national_count": data.national_count,
+            "last_refresh": data.refreshed_at,
             "source": "https://www.police.govt.nz/can-you-help-us/stolen-vehicles",
         }
