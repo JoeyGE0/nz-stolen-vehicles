@@ -23,6 +23,12 @@ USER_AGENT = (
 
 EVENT_MATCH = "nz_stolen_vehicles_match"
 SERVICE_CHECK_PLATE = "check_plate"
+SERVICE_ADD_BLACKLIST = "add_blacklist_plate"
+SERVICE_REMOVE_BLACKLIST = "remove_blacklist_plate"
+
+BLACKLIST_STORAGE_KEY = f"{DOMAIN}.blacklist"
+SOURCE_POLICE = "police"
+SOURCE_BLACKLIST = "blacklist"
 
 DISTRICTS: dict[str, str] = {
     "all": "All of New Zealand",

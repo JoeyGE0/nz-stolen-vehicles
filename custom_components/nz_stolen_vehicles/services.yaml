@@ -1,11 +1,42 @@
 check_plate:
   name: Check plate
-  description: Look up a registration against the cached NZ Police stolen vehicles list.
+  description: Look up a registration against the Police list and your local blacklist.
   fields:
     plate:
       name: Plate
       description: Registration plate to check (spaces and dashes are ignored).
       required: true
       example: MSS927
+      selector:
+        text:
+
+add_blacklist_plate:
+  name: Add blacklist plate
+  description: Manually blacklist a plate (optional reason). Used for vehicles that stole from you but are not on the Police list.
+  fields:
+    plate:
+      name: Plate
+      description: Registration plate to blacklist.
+      required: true
+      example: ABC123
+      selector:
+        text:
+    reason:
+      name: Reason
+      description: Optional note (e.g. stole parcel from driveway).
+      required: false
+      example: Stole parcel from driveway
+      selector:
+        text:
+
+remove_blacklist_plate:
+  name: Remove blacklist plate
+  description: Remove a plate from your local blacklist.
+  fields:
+    plate:
+      name: Plate
+      description: Registration plate to remove.
+      required: true
+      example: ABC123
       selector:
         text:

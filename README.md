@@ -8,9 +8,10 @@ Use it with Frigate LPR (or any other plate source) to alert when a stolen vehic
 
 - Checks the Police national CSV on a schedule, but only downloads it when the file is new (`If-Modified-Since` / HTTP 304)
 - Lets you pick one area at setup. **All of New Zealand is the default**. District filtering is done locally so we can use the cacheable national file.
-- Exposes `sensor.nz_stolen_vehicles_*` with the vehicle count
-- Service `nz_stolen_vehicles.check_plate` returns whether that plate is on the list
-- Fires `nz_stolen_vehicles_match` when a check hits
+- Exposes `sensor.nz_stolen_vehicles_*` with the vehicle count (plus `blacklist_count`)
+- Service `nz_stolen_vehicles.check_plate` returns whether that plate is on the Police list **or** your local blacklist
+- Services to add/remove local blacklist plates (optional reason)
+- Fires `nz_stolen_vehicles_match` when a check hits either list
 
 It does **not** scrape the search box. That form is behind reCAPTCHA. The download endpoint is public:
 
@@ -28,7 +29,7 @@ It does **not** scrape the search box. That form is behind reCAPTCHA. The downlo
 
 | Entity | State | Notes |
 | --- | --- | --- |
-| Stolen vehicles sensor | count | Attributes: `area`, `newest_date_stolen`, `file_last_modified`, `file_unchanged`, `last_refresh`. Full plate list is **not** on the entity. |
+| Stolen vehicles sensor | count | Attributes: `area`, `newest_date_stolen`, `file_last_modified`, `file_unchanged`, `national_count`, `blacklist_count`, `last_refresh`. Full plate list is **not** on the entity. |
 
 ## Service: `nz_stolen_vehicles.check_plate`
 
@@ -43,6 +44,7 @@ Response:
 
 ```yaml
 stolen: true
+blacklisted: false
 plate: MSS927
 normalized_plate: MSS927
 match_count: 1
@@ -55,9 +57,32 @@ matches:
     type: Hatchback
     date_stolen: "2026-09-01"
     district: Wellington
+    source: police
+    reason: ""
 ```
 
+`stolen` = Police list hit. `blacklisted` = your local list. Matches include `source: police` or `source: blacklist`.
+
 Plates are compared uppercase with spaces and dashes stripped.
+
+## Services: blacklist
+
+Manually flag a plate that stole from you (or anyone you want to watch) even if Police never list it. Reason is **optional**.
+
+```yaml
+action: nz_stolen_vehicles.add_blacklist_plate
+data:
+  plate: ABC123
+  reason: Stole parcel from driveway
+```
+
+```yaml
+action: nz_stolen_vehicles.remove_blacklist_plate
+data:
+  plate: ABC123
+```
+
+Blacklist is stored in Home Assistant and survives restarts. It is shared across all NZ Stolen Vehicles entries.
 
 ## Driveway automation (Frigate LPR)
 
@@ -78,17 +103,21 @@ actions:
     response_variable: stolen_check
   - if:
       - condition: template
-        value_template: "{{ stolen_check.stolen }}"
+        value_template: "{{ stolen_check.stolen or stolen_check.blacklisted }}"
     then:
       - action: notify.mobile_app_your_phone
         data:
-          title: Stolen vehicle
+          title: "{{ 'Blacklisted vehicle' if stolen_check.blacklisted else 'Stolen vehicle' }}"
           message: >-
             {{ stolen_check.normalized_plate }}
+            {% if stolen_check.stolen %}
             {{ stolen_check.matches[0].colour }}
             {{ stolen_check.matches[0].make }}
             {{ stolen_check.matches[0].model }}
             ({{ stolen_check.matches[0].district }})
+            {% else %}
+            {{ stolen_check.matches[0].reason or 'local blacklist' }}
+            {% endif %}
 ```
 
 You can also trigger on the event the service fires:

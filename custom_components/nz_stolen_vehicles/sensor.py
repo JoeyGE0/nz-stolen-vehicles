@@ -62,6 +62,7 @@ class NZStolenVehiclesSensor(
         data = self.coordinator.data
         if not data:
             return {}
+        blacklist = self.hass.data.get(DOMAIN, {}).get("blacklist")
         return {
             "area": district_label(data.district),
             "district_id": data.district,
@@ -69,6 +70,7 @@ class NZStolenVehiclesSensor(
             "file_last_modified": data.last_modified,
             "file_unchanged": data.file_unchanged,
             "national_count": data.national_count,
+            "blacklist_count": blacklist.count if blacklist else 0,
             "last_refresh": data.refreshed_at,
             "source": "https://www.police.govt.nz/can-you-help-us/stolen-vehicles",
         }

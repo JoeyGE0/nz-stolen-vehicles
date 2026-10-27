@@ -29,11 +29,35 @@
   "services": {
     "check_plate": {
       "name": "Check plate",
-      "description": "Look up a registration against the cached NZ Police stolen vehicles list.",
+      "description": "Look up a registration against the Police list and your local blacklist.",
       "fields": {
         "plate": {
           "name": "Plate",
           "description": "Registration plate to check. Spaces and dashes are ignored."
+        }
+      }
+    },
+    "add_blacklist_plate": {
+      "name": "Add blacklist plate",
+      "description": "Manually blacklist a plate. Reason is optional.",
+      "fields": {
+        "plate": {
+          "name": "Plate",
+          "description": "Registration plate to blacklist."
+        },
+        "reason": {
+          "name": "Reason",
+          "description": "Optional note (e.g. stole parcel from driveway)."
+        }
+      }
+    },
+    "remove_blacklist_plate": {
+      "name": "Remove blacklist plate",
+      "description": "Remove a plate from your local blacklist.",
+      "fields": {
+        "plate": {
+          "name": "Plate",
+          "description": "Registration plate to remove."
         }
       }
     }
